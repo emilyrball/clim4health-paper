@@ -1,0 +1,10 @@
+data/raw/*
+data/preprocessed/*
+data/analysis/*
+results/*
+*.nc
+*.html
+!data/raw/instructions.txt
+!data/processed/instructions.txt
+!data/analysis/instructions.txt
+!results/instructions.txt
