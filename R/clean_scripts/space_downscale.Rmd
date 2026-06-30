@@ -1,0 +1,30 @@
+---
+output:
+  pdf_document:
+    latex_engine: pdflatex
+geometry: margin=0in
+header-includes:
+  - \pagestyle{empty}
+  - \usepackage{xcolor}
+documentclass: article
+classoption: a4paper
+---
+``` {r eval = FALSE}
+library(sf)
+# --- load polygon data --- #
+munip_path <- system.file("extdata", "areas", "munip_vallecauca.gpkg",
+                          package = "clim4health")
+munip <- read_sf(munip_path)
+
+# --- aggregate to municipalities --- #
+hind <- c4h_space(hind, munip, fun = "mean", areas_id = "munip_code")
+fcst <- c4h_space(fcst, munip, fun = "mean", areas_id = "munip_code")
+
+# --- calibrate predictions for all municipalities --- #
+hind_cal <- c4h_downscale("Intbc", exp = hind, obs = rean,
+                          method_bc = "quantile_mapping",
+                          method_remap = "con")
+fcst_cal <- c4h_downscale("Intbc", exp = hind, obs = rean, exp_cor = fcst,
+                          method_bc = "quantile_mapping",
+                          method_remap = "con")
+```

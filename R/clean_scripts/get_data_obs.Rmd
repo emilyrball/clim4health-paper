@@ -1,0 +1,42 @@
+---
+output:
+  pdf_document:
+    latex_engine: pdflatex
+geometry: margin=0in
+header-includes:
+  - \pagestyle{empty}
+  - \usepackage{xcolor}
+documentclass: article
+classoption: a4paper
+---
+``` {r eval = FALSE}
+# --- load clim4health package --- #
+library(clim4health)
+
+# --- specify personal access token for CDS API --- #
+pat_api <- "XXXXXXXXXXXXXXXXXXXX"
+
+# --- specify path to save the data --- #
+data_path <- "/path/to/outdir/"
+outname <- paste0("era5land_", var)
+path_era  <- paste0(data_path, "/Colombia/era5land/")
+
+# --- specify variables and month to download --- #
+longname <- "total_precipitation"
+month <- 12
+
+for (i in 1981:2016) {
+  if (!file.exists(paste0(path_era, outname, "_",
+                          i, sprintf("%02d", month), ".nc"))) {
+    c4h_get(pat = pat_api,
+            dataset = "reanalysis-era5-land-monthly-means",
+            product_type = "monthly_averaged_reanalysis",
+            variable = longname,          # use longname variable
+            year = i,                     # year to download
+            month = month,                # month to download
+            bbox = c(5.5, -78, 3.0, -75), # bounding box
+            outname = outname,            # output file name prefix
+            outpath = path_era)           # output path
+  }
+}
+```

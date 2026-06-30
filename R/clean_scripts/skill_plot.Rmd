@@ -1,0 +1,61 @@
+---
+output:
+  pdf_document:
+    latex_engine: pdflatex
+geometry: margin=0in
+header-includes:
+  - \pagestyle{empty}
+  - \usepackage{xcolor}
+documentclass: article
+classoption: a4paper
+---
+``` {r eval = FALSE}
+# --- Load municipality boundaries ---
+munip <- read_sf(munip_path)
+aoi <- munip %>% st_transform(4326)
+
+# --- Evaluate skill --- #
+skill_cal <- c4h_verify(hind_cal$exp, hind_cal$obs,
+                        metrics = c("CRPSS", "RMSE"))
+
+# --- Plot downscaled forecast data --- #
+p1 <- c4h_plot(fcst_cal$exp, ensemble = TRUE,
+               title = "Downscaled Predicted May-October 2025 Temperature",
+               legend = "Temperature\n(°C)",
+               boundaries = aoi,
+               mask_boundaries = TRUE)
+
+# --- Plot skill metrics --- #
+p4 <- c4h_plotskill(skill_cal$CRPSS$crpss,
+                    sign = skill_cal$CRPSS$sign,
+                    title = "Prediction Skill",
+                    legend = "CRPSS",
+                    boundaries = aoi,
+                    mask_boundaries = TRUE)
+
+p5 <- c4h_plot(skill_cal$RMSE$rmse,
+               title = "Prediction Skill",
+               legend = "RMSE",
+               palette = "Reds",
+               boundaries = aoi,
+               mask_boundaries = TRUE)
+
+# --- Calculate hypothetical threshold-based suitability --- #
+hind_aedes <- c4h_index(hind_cal$exp, return_mask = TRUE,
+                        lower_threshold = 25)
+rean_aedes <- c4h_index(hind_cal$obs, return_mask = TRUE,
+                        lower_threshold = 25)
+
+# --- Evaluate skill of suitability predictions --- #
+skill_aedes <- c4h_verify(hind_aedes, rean_aedes,
+                          metrics = c("BSS", "CRPSS"),
+                          brier_thresholds = c(0.1, 0.5, 0.9))
+
+# --- Plot skill of suitability predictions --- #
+p9 <- c4h_plotskill(skill_aedes$BSS50$bss,
+                    sign = skill_aedes$BSS50$sign,
+                    title = "Prediction Skill",
+                    legend = "BSS50",
+                    boundaries = aoi,
+                    mask_boundaries = TRUE)
+```

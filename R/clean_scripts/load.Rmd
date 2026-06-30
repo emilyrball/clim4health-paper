@@ -1,0 +1,31 @@
+---
+output:
+  pdf_document:
+    latex_engine: pdflatex
+geometry: margin=0in
+header-includes:
+  - \pagestyle{empty}
+  - \usepackage{xcolor}
+documentclass: article
+classoption: a4paper
+---
+``` {r eval = FALSE}
+# --- set paths --- #
+path_rean <- paste0("data/raw/DominicanRepublic/era5land/monthly/")
+path_hind <- paste0("data/raw/DominicanRepublic/hindcast/")
+path_fcst <- paste0("data/raw/DominicanRepublic/forecast/")
+
+vars <- c("t2m")
+
+# --- load hindcast and reanalysis with same temporal structure --- #
+hind <- c4h_load(path_hind, variable = vars, ext = "nc", month = 5, leadtime_month = 1:6, year = 1994:2016)
+rean <- c4h_load(path_rean, variable = vars, ext = "nc", month = 5, leadtime_month = 1:6, year = 1994:2016)
+
+# --- load all forecast data --- #
+fcst <- c4h_load(path_fcst, variable = vars, ext = "nc")
+
+# --- convert from Kelvin to Celsius --- #
+hind <- c4h_convert_units(hind, variable = vars, from = c("K"), to = c("celsius"))
+fcst <- c4h_convert_units(fcst, variable = vars, from = c("K"), to = c("celsius"))
+rean <- c4h_convert_units(rean, variable = vars, from = c("K"), to = c("celsius"))
+```
