@@ -17,11 +17,7 @@ clim4health_path <- "/esarchive/scratch/eball/gitlab_repos/clim4health/"
 exp_path <- "/esarchive/exp/ecmwf/system51c3s/monthly_mean/"
 rec_path <- "/esarchive/recon/ecmwf/era5land/monthly_mean/"
 fig_path <- "figures/DominicanRepublic/"
-
 munip_path <- "data/raw/DominicanRepublic/do_shp/do.shp"
-# --- Load municipality boundaries ---
-munip <- read_sf(munip_path)
-aoi <- munip %>% st_transform(4326)
 
 # Load file in local interactively
 ncdf4::nc_open(paste0(clim4health_path,
@@ -48,6 +44,10 @@ if (var == "prlr") {
   rean_path <-
     paste0(rec_path, "tas_f1h/")
 }
+
+# --- Load municipality boundaries ---
+munip <- read_sf(munip_path)
+aoi <- munip %>% st_transform(4326)
 
 # --- Load reanalysis data ---
 rean <- c4h_load(rean_path,
@@ -90,10 +90,10 @@ obs <- c4h_load(rean_path,
 obs <- c4h_convert_units(obs, var = var, from = "K", to = "celsius")
 obs$attrs$Dates <- as.Date(obs$attrs$Dates)
 # --- Downscale hindcast and forecast data ---
-hind_cal <- c4h_downscale("Intbc", bc_method = "evmos",
+hind_cal <- c4h_downscale("Intbc", method_bc = "evmos",
                           exp = hind, obs = rean,
                           method_remap = "bilinear")
-fcst_cal <- c4h_downscale("Intbc", bc_method = "evmos",
+fcst_cal <- c4h_downscale("Intbc", method_bc = "evmos",
                           exp = hind, obs = rean,
                           exp_cor = fcst,
                           method_remap = "bilinear")
@@ -169,14 +169,6 @@ p5 <- c4h_plot(skill_cal$RMSE$rmse,
 ggplot2::ggsave(paste0(fig_path,
                        "/temperature_skill_rmse.png"),
                 plot = p5, width = 8, height = 4, dpi = 300)
-p6 <- c4h_plotskill(skill_cal$BSS90$bss,
-                    title = "Prediction Skill",
-                    legend = "BSS90",
-                    centering = 0,
-                    boundaries = aoi)
-ggplot2::ggsave(paste0(fig_path,
-                       "/temperature_skill_bss90.png"),
-                plot = p6, width = 8, height = 4, dpi = 300)
 
 # --- Calculate hypothetical threshold-based suitability ---
 hind_aedes <- c4h_index(hind_cal$exp, return_mask = TRUE,
@@ -195,7 +187,7 @@ skill_aedes <- c4h_verify(hind_aedes, rean_aedes,
 
 # --- Plot suitability forecast ---
 p7 <- c4h_plot(fcst_aedes, ensemble = TRUE,
-               title = paste0("Downscaled Predicted May-October ",
+               title = paste0("Downscaled Predicted May-October",
                               "2025 Example Suitability"),
                legend = "Probability\nsuitability",
                boundaries = aoi,
