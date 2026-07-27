@@ -20,7 +20,7 @@ This repository contains the analysis code and results of the tools paper *clim4
 © 2026 BSC. The content of this repository is licensed under [GPL3](LICENSE) (please check FAQs below if you want to change it).
 
 <div align="center">
-<img src='figures/DominicanRepublic/temperature_skill_crpss.png' width="95%" /></center>
+<img src='figures/DominicanRepublic/temperature_skill_crpss.png' width="80%" /></center>
 <p> CRPSS of a downscaled temperature forecast over the Dominican Republic, generated using clim4health. Figure 8 of the manuscript. </p>
 </div>
 
