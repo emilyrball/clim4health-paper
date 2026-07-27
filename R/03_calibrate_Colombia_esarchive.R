@@ -23,6 +23,8 @@ ncdf4::nc_open(paste0(clim4health_path,
 # --- Load libraries ---
 library(sf)
 library(devtools)
+library(ggplot2)
+library(cowplot)
 devtools::load_all(clim4health_path)
 
 # --- Set parameters ---
@@ -133,18 +135,18 @@ for (ij in (target_month - nmonth + 1):target_month) {
                     areas_id = "munip_code")
 
   if (var == "prlr") {
-    hind_cal <- c4h_downscale("Intbc", bc_method = "quantile_mapping",
+    hind_cal <- c4h_downscale("Intbc", method_bc = "quantile_mapping",
                               exp = hind, obs = rean,
                               method_remap = "con")
-    fcst_cal <- c4h_downscale("Intbc", bc_method = "quantile_mapping",
+    fcst_cal <- c4h_downscale("Intbc", method_bc = "quantile_mapping",
                               exp = hind, obs = rean,
                               exp_cor = fcst,
                               method_remap = "con")
   } else if (var == "tas") {
-    hind_cal <- c4h_downscale("Intbc", bc_method = "evmos",
+    hind_cal <- c4h_downscale("Intbc", method_bc = "evmos",
                               exp = hind, obs = rean,
                               method_remap = "bic")
-    fcst_cal <- c4h_downscale("Intbc", bc_method = "evmos",
+    fcst_cal <- c4h_downscale("Intbc", method_bc = "evmos",
                               exp = hind, obs = rean,
                               exp_cor = fcst,
                               method_remap = "bic")
@@ -155,7 +157,7 @@ for (ij in (target_month - nmonth + 1):target_month) {
 
   llf[[length(llf) + 1]] <- fcst_cal$exp
   skill_cal <- c4h_verify(hind_cal$exp, hind_cal$obs,
-                               metrics = c("RPSS", "BSS"))
+                          metrics = c("RPSS", "BSS"))
   skill_cal$RPSS$rpss$attrs$Dates <-
     lubridate::add_with_rollback(skill_cal$RPSS$rpss$attrs$Dates,
                                  months(ij - target_month))
@@ -226,42 +228,39 @@ signif$attrs <- llf[[1]]$attrs
 signif$attrs$Dates <- do.call(c, lapply(llf, function(x) x$attrs$Dates))
 dim(signif$attrs$Dates) <- c("sdate" = 1, "time" = nmonth)
 
-
-#skill <- c4h_index(skill, lower_threshold = 0, closed = TRUE)
-
-p1 <- c4h_plotskill(skill, sign = signif,
+p2 <- c4h_plotskill(skill, sign = signif,
                     title = paste0("Prediction Skill, Target Month: ",
                                    month.name[target_month], " ",
                                    target_year),
-                    legend = "RPSS")#,
-                    #palette = "Reds")
+                    legend = "RPSS")
 
+p2 <- p2 +
+  ggplot2::facet_wrap(
+    stats::as.formula("~time"),
+    labeller = ggplot2::as_labeller(function(x) paste0("sdate: ", x))
+  )
 ggplot2::ggsave(paste0(fig_path, var, "_rpss_",
                        target_month, "_", target_year, ".png"),
-                plot = p1, width = 8, height = 6, dpi = 300)
+                plot = p2, width = 8, height = 6, dpi = 300)
 
 
 skill90 <- CSTools::CST_BindDim(bs9, "time")
 skill90$attrs <- bs9[[1]]$attrs
-skill90$attrs$Dates <-skill$attrs$Dates
+skill90$attrs$Dates <- skill$attrs$Dates
 
 sign90 <- CSTools::CST_BindDim(sig9, "time")
 sign90$attrs <- sig9[[1]]$attrs
 sign90$attrs$Dates <- signif$attrs$Dates
 
-
-#skill90 <- c4h_index(skill90, lower_threshold = 0, closed = TRUE)
-
-p1 <- c4h_plotskill(skill90, sign = sign90,
+p3 <- c4h_plotskill(skill90, sign = sign90,
                     title = paste0("Prediction Skill, Target Month: ",
                                    month.name[target_month], " ",
                                    target_year),
-                    legend = "BSS90")#,
-                    #palette = "Reds")
+                    legend = "BSS90")
 
 ggplot2::ggsave(paste0(fig_path, var, "_bss90_",
                        target_month, "_", target_year, ".png"),
-                plot = p1, width = 8, height = 6, dpi = 300)
+                plot = p3, width = 8, height = 6, dpi = 300)
 
 
 skill10 <- CSTools::CST_BindDim(bs1, "time")
@@ -272,33 +271,29 @@ sign10 <- CSTools::CST_BindDim(sig1, "time")
 sign10$attrs <- sig1[[1]]$attrs
 sign10$attrs$Dates <- signif$attrs$Dates
 
-
-#skill10 <- c4h_index(skill10, lower_threshold = 0, closed = TRUE)
-
-p1 <- c4h_plotskill(skill10, sign = sign10,
+p4 <- c4h_plotskill(skill10, sign = sign10,
                     title = paste0("Prediction Skill, Target Month: ",
                                    month.name[target_month], " ",
                                    target_year),
-                    legend = "BSS10")#,
-                    #palette = "Reds")
+                    legend = "BSS10")
 
 ggplot2::ggsave(paste0(fig_path, var, "_bss10_",
                        target_month, "_", target_year, ".png"),
-                plot = p1, width = 8, height = 6, dpi = 300)
+                plot = p4, width = 8, height = 6, dpi = 300)
 
 rean_tmp <- rean
 rean_clim <- c4h_collapse(rean_tmp, dim = "sdate", fun = "mean")
 
-p1 <- c4h_plot(rean_clim,
+p5 <- c4h_plot(rean_clim,
                title = paste0(month.name[target_month],
                               " Climatology"),
                legend = leg_label,
                palette = pal)
-p1 <- p1 + ggplot2::scale_fill_continuous(palette = pal, limits = lims)
+p5 <- p5 + ggplot2::scale_fill_continuous(palette = pal, limits = lims)
 
 ggplot2::ggsave(paste0(fig_path, var, "_climatology_",
                        target_month, ".png"),
-                plot = p1, width = 5, height = 4, dpi = 300)
+                plot = p5, width = 5, height = 4, dpi = 300)
 
 rean_obs <- c4h_load(rean_path,
                      variable = var,
@@ -317,17 +312,16 @@ rean_obs$attrs$Dates <- as.Date(rean_obs$attrs$Dates)
 rean_obs <- c4h_space(rean_obs, munip, fun = "mean",
                       areas_id = "munip_code")
 
-p2 <- c4h_plot(rean_obs,
+p6 <- c4h_plot(rean_obs,
                title = paste0(month.name[target_month], " ",
                               target_year, " ", lng_nm),
                legend = leg_label,
-               #centering = 750,
                palette = pal)
 
-p2 <- p2 + ggplot2::scale_fill_continuous(palette = pal, limits = lims)
+p6 <- p6 + ggplot2::scale_fill_continuous(palette = pal, limits = lims)
 ggplot2::ggsave(paste0(fig_path, var, "_observed_",
                        target_month, "_", target_year, ".png"),
-                plot = p2, width = 5, height = 4, dpi = 300)
+                plot = p6, width = 5, height = 4, dpi = 300)
 
 
 anom <- rean_obs
@@ -341,11 +335,11 @@ if (var == "prlr") {
   dir <- -1
 }
 
-p2 <- c4h_plot(anom,
+p7 <- c4h_plot(anom,
                title = paste0(month.name[target_month], " ",
                               target_year, " Anomaly"),
                legend = leg_label)
-p2 <- p2 +
+p7 <- p7 +
   ggplot2::scale_fill_distiller(
     name = leg_label,
     palette = "RdBu", direction = dir,
@@ -353,7 +347,7 @@ p2 <- p2 +
   )
 ggplot2::ggsave(paste0(fig_path, var, "_anomaly_",
                        target_month, "_", target_year, ".png"),
-                plot = p2, width = 5, height = 4, dpi = 300)
+                plot = p7, width = 5, height = 4, dpi = 300)
 
 
 
@@ -373,43 +367,9 @@ if (load_recent) {
   } else if (var == "tas") {
     rean_obs <- c4h_convert_units(rean_obs, to = "celsius") # convert K to C
   }
-  
+
   rean_obs <- c4h_space(rean_obs, munip, fun = "mean",
                         areas_id = "munip_code")
-  
+
   c4h_plot(rean_obs)
 }
-#
-#
-## --- calculate anomalies
-#anom <- CSTools::CST_Anomaly(exp = hind_cal$exp, obs = hind_cal$obs,
-#                             memb_dim = "ensemble",
-#                             dat_dim = c("dataset", "ensemble"))
-#
-#pb_exp <- s2dv::ProbBins(anom$exp$data, thr = c(1/3, 2/3), memb_dim = "ensemble", #fcyr = 36)
-#
-#pb_exp <- s2dv::MeanDims(pb_exp, c("sdate", "ensemble", "dataset", "time", "var"))
-#
-## --- get 33rd, 66th percentile
-#
-#thr_90 <- apply(rean$data, c(1, 2, 4, 6), quantile, na.rm = TRUE, probs = c(0.9))
-##thr_90 <- as.vector(thr_90)
-#
-## Use sweep to subtract threshold along all dims except dim 3
-#forecast_tmp <- sweep(forecast$data, c(1, 2, 4, 6), thr_90, FUN = function(x, thr) #ifelse(x >= thr, 1, 0))
-#
-#fcst_prob <- forecast
-#fcst_prob$data <- forecast_tmp
-#fcst_prob$dims <- dim(fcst_prob$data)
-#
-#fcst_prob <- c4h_collapse(fcst_prob, dim = "ensemble", fun = "mean")
-#
-#c4h_plot(fcst_prob, palette = "Blues")
-#
-#
-#rean_90 <- rean
-#rean_90$data <- rean_tmp
-#rean_90$attrs$Dates <- rean$attrs$Dates[1, , drop = FALSE]
-#rean_90$dims <- dim(rean_90$data)
-#
-#pb_bins <- s2dv::ProbBins()
