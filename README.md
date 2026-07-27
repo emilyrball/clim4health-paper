@@ -1,4 +1,4 @@
-# clim4health: a new R package to harmonise climate datasets for health impact studies
+# clim4health: an R package to harmonise climate datasets for health impact studies
  <a href='https://www.bsc.es/es'><img src='figures/BSC-logo.png' align="right" height="80" width="80" /></a> <a href='https://www.bsc.es/es'><img src='figures/logo_harmonize.png' align="right" height="80" width="80" /></a>
 
 <!-- badges: start -->
