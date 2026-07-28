@@ -16,6 +16,7 @@ library(devtools)
 clim4health_path <- "/home/eball/gitlab_repos/clim4health/"
 devtools::load_all(clim4health_path)
 data_path <- "data/raw"
+pat_api <- "XXXXXXXXXXXXXXXXXXXXXXX"
 vars <- c("t2m")
 
 ####
@@ -38,7 +39,7 @@ path_monthly  <- paste0(data_path, "/DominicanRepublic/era5land/monthly/")
 path_hind <- paste0(data_path, "/DominicanRepublic/hindcast/")
 path_fore <- paste0(data_path, "/DominicanRepublic/forecast/")
 
-for (i in c(1994:2016, 2025)) {
+for (i in c(1981:2016, 2025)) {
   for (j in 5:10) {
     if (!file.exists(paste0(path_monthly, "era5land_",
                             i, sprintf("%02d", j), ".nc"))) {

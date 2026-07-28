@@ -19,27 +19,20 @@ library(dplyr)
 library(cowplot)
 library(patchwork)
 
-clim4health_path <- "/esarchive/scratch/eball/gitlab_repos/clim4health/"
-rean_path <- "/esarchive/recon/ecmwf/era5land/monthly_mean/tas_f1h/"
+clim4health_path <- "/home/eball/gitlab_repos/clim4health/"
+rean_path <- "/data/raw/Brazil/era5land/"
 
 devtools::load_all(clim4health_path)
 
-#source(paste0(clim4health_path, "R/c4h_load.R"))
-#source(paste0(clim4health_path, "R/utils-load.R"))
-#source(paste0(clim4health_path, "R/c4h_time.R"))
-#source(paste0(clim4health_path, "R/utils-time.R"))
-#source(paste0(clim4health_path, "R/c4h_downscale.R"))
-#source(paste0(clim4health_path, "R/utils-downscale.R"))
-
 ####################################################################
 
-station_data <- readRDS("data/raw/Brazil/obs/brazil.rds")
+station_data <- readRDS("data/processed/Brazil/obs/brazil.rds")
 station_data <- c4h_time(station_data, dim_aggregation = "time",
                          time_aggregation = "monthly",
                          fun = "mean")
 
 reanalysis_monthly <- c4h_load(rean_path,
-                 variable = "tas",
+                 variable = "t2m",
                  year = 2000:2025,
                  month = 1,
                  leadtime_month = 1:12,
@@ -50,7 +43,7 @@ reanalysis_monthly <- c4h_load(rean_path,
 #                         time_aggregation = "monthly",
 #                         fun = "mean")
                  
-reanalysis_monthly <- c4h_convert_units(reanalysis_monthly, var = "tas",
+reanalysis_monthly <- c4h_convert_units(reanalysis_monthly, var = "t2m",
                                        to = "celsius")
 # extract reanalysis at station locations #
 locations <- list(latitude = station_data$attrs$location$latitude,
@@ -89,7 +82,10 @@ p1 <- ggplot(data_long, aes(x = as.Date(date), y = value, color = source,
   theme(legend.position = "bottom")
 
 ggsave("figures/Brazil/calibration_plot.png", p1,
-       width = 14, height = 5)
+       width = 14, height = 5, dpi = 300)
+ggsave("figures/Brazil/calibration_plot.pdf", p1,
+       device = grDevices::cairo_pdf,
+       width = 14, height = 5, dpi = 300)
 
 data_wide <- data_long %>%
   mutate(date = paste0(lubridate::year(as.Date(date)), "-", lubridate::month(as.Date(date)))) %>%

@@ -14,25 +14,59 @@
 
 # --- Set paths ---
 clim4health_path <- "/esarchive/scratch/eball/gitlab_repos/clim4health/"
-library(devtools)
-devtools::load_all(clim4health_path)
 data_path <- "data/raw"
-
+fig_path <- "figures/DominicanRepublic/"
+munip_path <- "data/raw/DominicanRepublic/do_shp/do.shp"
 path_era  <- paste0(data_path, "/DominicanRepublic/era5land/monthly/")
 path_hind <- paste0(data_path, "/DominicanRepublic/hindcast/")
 path_fcst <- paste0(data_path, "/DominicanRepublic/forecast/")
 
-vars <- c("t2m")
+# --- Load libraries ---
+library(sf)
+library(devtools)
+devtools::load_all(clim4health_path)
 
-hind <- c4h_load(path_hind, variable = vars, ext = "nc", month = 5,
-                 leadtime_month = 1:6, year = 1994:2016)
-rean <- c4h_load(path_era, variable = vars, ext = "nc", month = 5,
-                 leadtime_month = 1:6, year = 1994:2016)
+# --- Set parameters ---
+init_month <- 5
+var <- "t2m"
+fcst_year <- 2025
 
+# --- Load municipality boundaries ---
+munip <- read_sf(munip_path)
+aoi <- munip %>% st_transform(4326)
+
+# --- Load reanalysis data ---
+rean <- c4h_load(path_era,
+                 variable = var,
+                 year = 1981:2016,
+                 month = init_month,
+                 leadtime_month = 1:6,
+                 bbox = c(21, -72.5, 17.5, -68.5),
+                 ext = "nc")
+# --- Load hindcast data ---
+hind <- c4h_load(path_hind,
+                 variable = var,
+                 year = 1981:2016,
+                 month = init_month,
+                 leadtime_month = 1:6,
+                 bbox = c(21, -72.5, 17.5, -68.5),
+                 ext = "nc")
+# --- Load forecast data ---
 fcst <- c4h_load(path_fcst,
-                 variable = vars, ext = "nc")
-obs  <- c4h_load(path_era, variable = vars, ext = "nc", month = 5,
-                 leadtime_month = 1:6, year = 2025)
+                 variable = var,
+                 year = fcst_year,
+                 month = init_month,
+                 leadtime_month = 1:6,
+                 bbox = c(21, -72.5, 17.5, -68.5),
+                 ext = "nc")
+# --- Load observed data ---
+obs <- c4h_load(rean_path,
+                variable = var,
+                year = fcst_year,
+                month = init_month,
+                leadtime_month = 1:6,
+                bbox = c(21, -72.5, 17.5, -68.5),
+                ext = "nc")
 
 hind <- c4h_convert_units(hind, variable = vars, from = c("K"),
                           to = c("celsius"))
@@ -40,23 +74,21 @@ fcst <- c4h_convert_units(fcst, variable = vars, from = c("K"),
                           to = c("celsius"))
 rean <- c4h_convert_units(rean, variable = vars, from = c("K"),
                           to = c("celsius"))
-
-
 obs  <- c4h_convert_units( obs, variable = vars, from = c("K"),
                           to = c("celsius"))
 
 # --- Downscale hindcast and forecast data ---
-hind_cal <- c4h_downscale("Intbc", bc_method = "evmos",
+hind_cal <- c4h_downscale("Intbc", method_bc = "evmos",
                           exp = hind, obs = rean,
                           method_remap = "bilinear")
-fcst_cal <- c4h_downscale("Intbc", bc_method = "evmos",
+fcst_cal <- c4h_downscale("Intbc", method_bc = "evmos",
                           exp = hind, obs = rean,
                           exp_cor = fcst,
                           method_remap = "bilinear")
 
 # --- Evaluate skill ---
 skill_cal <- c4h_verify(hind_cal$exp, hind_cal$obs,
-                             metrics = c("CRPSS", "RMSE"))
+                        metrics = c("CRPSS", "RMSE"))
 
 # --- Plot downscaled forecast data ---
 p1 <- c4h_plot(fcst_cal$exp, ensemble = TRUE,
@@ -70,9 +102,19 @@ p1 <- p1 + ggplot2::scale_fill_continuous(palette = "YlOrRd",
 ggplot2::ggsave(paste0(fig_path, "/downscaled_",
                        "temperature_forecast.png"),
                 plot = p1, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, "/downscaled_",
+                       "temperature_forecast.pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p1, width = 8, height = 4, dpi = 300)
 
 # --- Crop raw forecast data to plot smaller area ---
-p2 <- c4h_plot(fcst, ensemble = TRUE,
+fcst_tmp <- fcst
+fcst_tmp$attrs$Variable$varName <- "var_tmp"
+fcst_tmp$attrs$Variable$metadata <- list(var_tmp = list(units = "C"))
+fcst_tmp <- CSTools::CST_Subset(fcst_tmp, along = "latitude",
+                                indices = 1:(fcst_tmp$dims["latitude"] - 1))
+
+p2 <- c4h_plot(fcst_tmp, ensemble = TRUE,
                title = "Predicted May-October 2025 Temperature",
                legend = "Temperature\n(°C)",
                boundaries = aoi)
@@ -83,6 +125,12 @@ p2 <- p2 + ggplot2::scale_fill_continuous(palette = "YlOrRd",
 ggplot2::ggsave(paste0(fig_path,
                        "/raw_",
                        "temperature_forecast.png"),
+                plot = p2, width = 8, height = 4, dpi = 300)
+
+ggplot2::ggsave(paste0(fig_path,
+                       "/raw_",
+                       "temperature_forecast.pdf"),
+                device = grDevices::cairo_pdf,
                 plot = p2, width = 8, height = 4, dpi = 300)
 
 # --- Plot observed data ---
@@ -98,6 +146,11 @@ ggplot2::ggsave(paste0(fig_path,
                        "/observed_",
                        "temperature.png"),
                 plot = p3, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/observed_",
+                       "temperature.pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p3, width = 8, height = 4, dpi = 300)
 
 # --- Plot skill ---
 p4 <- c4h_plotskill(skill_cal$CRPSS$crpss,
@@ -109,24 +162,24 @@ p4 <- c4h_plotskill(skill_cal$CRPSS$crpss,
 ggplot2::ggsave(paste0(fig_path,
                        "/temperature_skill_crpss.png"),
                 plot = p4, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/temperature_skill_crpss.pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p4, width = 8, height = 4, dpi = 300)
 
 p5 <- c4h_plot(skill_cal$RMSE$rmse,
-                    title = "Prediction Skill",
-                    legend = "RMSE",
-                    palette = "Reds",
-                    boundaries = aoi,
-                    mask_boundaries = TRUE)
+               title = "Prediction Skill",
+               legend = "RMSE",
+               palette = "Reds",
+               boundaries = aoi,
+               mask_boundaries = TRUE)
 ggplot2::ggsave(paste0(fig_path,
                        "/temperature_skill_rmse.png"),
                 plot = p5, width = 8, height = 4, dpi = 300)
-p6 <- c4h_plotskill(skill_cal$BSS90$bss,
-                    title = "Prediction Skill",
-                    legend = "BSS90",
-                    centering = 0,
-                    boundaries = aoi)
 ggplot2::ggsave(paste0(fig_path,
-                       "/temperature_skill_bss90.png"),
-                plot = p6, width = 8, height = 4, dpi = 300)
+                       "/temperature_skill_rmse.pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p5, width = 8, height = 4, dpi = 300)
 
 # --- Calculate hypothetical threshold-based suitability ---
 hind_aedes <- c4h_index(hind_cal$exp, return_mask = TRUE,
@@ -140,12 +193,13 @@ rean_aedes <- c4h_index(hind_cal$obs, return_mask = TRUE,
 
 # --- Evaluate skill of suitability predictions ---
 skill_aedes <- c4h_verify(hind_aedes, rean_aedes,
-                               metrics = c("BSS", "CRPSS"),
-                               brier_thresholds = c(0.1, 0.5, 0.9))
+                          metrics = c("BSS", "CRPSS"),
+                          brier_thresholds = c(0.1, 0.5, 0.9))
 
 # --- Plot suitability forecast ---
 p7 <- c4h_plot(fcst_aedes, ensemble = TRUE,
-               title = "Downscaled Predicted May-October 2025 Example Suitability",
+               title = paste0("Downscaled Predicted May-October",
+                              "2025 Example Suitability"),
                legend = "Probability\nsuitability",
                boundaries = aoi,
                palette = "Reds",
@@ -153,6 +207,11 @@ p7 <- c4h_plot(fcst_aedes, ensemble = TRUE,
 ggplot2::ggsave(paste0(fig_path,
                        "/downscaled_",
                        "aedes_aegypti_forecast.png"),
+                plot = p7, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/downscaled_",
+                       "aedes_aegypti_forecast.pdf"),
+                device = grDevices::cairo_pdf,
                 plot = p7, width = 8, height = 4, dpi = 300)
 
 # --- Plot observed suitability ---
@@ -166,6 +225,11 @@ ggplot2::ggsave(paste0(fig_path,
                        "/observed_",
                        "aedes_aegypti_suitability.png"),
                 plot = p8, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/observed_",
+                       "aedes_aegypti_suitability.pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p8, width = 8, height = 4, dpi = 300)
 
 # --- Plot skill of suitability predictions ---
 p9 <- c4h_plotskill(skill_aedes$BSS50$bss,
@@ -176,6 +240,10 @@ p9 <- c4h_plotskill(skill_aedes$BSS50$bss,
                     mask_boundaries = TRUE)
 ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_bss50.png"),
+                plot = p9, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/aedes_aegypti_suitability_skill_bss50.pdf"),
+                device = grDevices::cairo_pdf,
                 plot = p9, width = 8, height = 4, dpi = 300)
 
 
@@ -188,6 +256,10 @@ p9 <- c4h_plotskill(skill_aedes$BSS90$bss,
 ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_bss90.png"),
                 plot = p9, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/aedes_aegypti_suitability_skill_bss90.pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p9, width = 8, height = 4, dpi = 300)
 
 p9 <- c4h_plotskill(skill_aedes$BSS10$bss,
                     sign = skill_aedes$BSS10$sign,
@@ -197,6 +269,10 @@ p9 <- c4h_plotskill(skill_aedes$BSS10$bss,
                     mask_boundaries = TRUE)
 ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_bss10.png"),
+                plot = p9, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/aedes_aegypti_suitability_skill_bss10.pdf"),
+                device = grDevices::cairo_pdf,
                 plot = p9, width = 8, height = 4, dpi = 300)
 
 
@@ -208,4 +284,8 @@ p9 <- c4h_plotskill(skill_aedes$CRPSS$crpss,
                     mask_boundaries = TRUE)
 ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_crpss.png"),
+                plot = p9, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/aedes_aegypti_suitability_skill_crpss.pdf"),
+                device = grDevices::cairo_pdf,
                 plot = p9, width = 8, height = 4, dpi = 300)

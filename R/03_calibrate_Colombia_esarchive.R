@@ -4,7 +4,8 @@
 #
 # Script Name: 03_calibrate_Colombia_esarchive.R
 # Description: Load, aggregate, and calibrate forecast data for Colombia. Using
-#              data stored on esarchive.
+#              data stored on esarchive (internal usage only - used for
+#              exploring forecast target months).
 #
 # Author(s): Emily Ball
 # Date created: 2026-04-13
@@ -16,6 +17,7 @@
 clim4health_path <- "/esarchive/scratch/eball/gitlab_repos/clim4health/"
 exp_path <- "/esarchive/exp/ecmwf/system51c3s/monthly_mean/"
 rec_path <- "/esarchive/recon/ecmwf/era5land/monthly_mean/"
+fig_path <- "figures/Colombia/"
 # Load file in local interactively
 ncdf4::nc_open(paste0(clim4health_path,
                       "inst/extdata/forecast/t2m_20250101.nc"))
@@ -33,7 +35,6 @@ target_year  <- 2025
 var <- "prlr"
 nmonth <- 6
 
-fig_path <- "figures/Colombia/"
 if (var == "prlr") {
   hind_path <-
     paste0(exp_path, "prlr_s0-24h/")
@@ -58,7 +59,6 @@ bs9 <- list()
 sig9 <- list()
 bs1 <- list()
 sig1 <- list()
-
 
 # --- Load and aggregate reanalysis data ---
 rean <- c4h_load(rean_path,
@@ -158,6 +158,7 @@ for (ij in (target_month - nmonth + 1):target_month) {
   llf[[length(llf) + 1]] <- fcst_cal$exp
   skill_cal <- c4h_verify(hind_cal$exp, hind_cal$obs,
                           metrics = c("RPSS", "BSS"))
+
   skill_cal$RPSS$rpss$attrs$Dates <-
     lubridate::add_with_rollback(skill_cal$RPSS$rpss$attrs$Dates,
                                  months(ij - target_month))
@@ -217,6 +218,10 @@ p1 <- p1 + ggplot2::scale_fill_continuous(palette = pal, limits = lims)
 ggplot2::ggsave(paste0(fig_path, var, "_forecast_",
                        target_month, "_", target_year, ".png"),
                 plot = p1, width = 8, height = 6, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_forecast_",
+                       target_month, "_", target_year, ".pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p1, width = 8, height = 6, dpi = 300)
 
 skill <- CSTools::CST_BindDim(lls, "time")
 skill$attrs <- llf[[1]]$attrs
@@ -242,6 +247,10 @@ p2 <- p2 +
 ggplot2::ggsave(paste0(fig_path, var, "_rpss_",
                        target_month, "_", target_year, ".png"),
                 plot = p2, width = 8, height = 6, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_rpss_",
+                       target_month, "_", target_year, ".pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p2, width = 8, height = 6, dpi = 300)
 
 
 skill90 <- CSTools::CST_BindDim(bs9, "time")
@@ -262,6 +271,11 @@ ggplot2::ggsave(paste0(fig_path, var, "_bss90_",
                        target_month, "_", target_year, ".png"),
                 plot = p3, width = 8, height = 6, dpi = 300)
 
+ggplot2::ggsave(paste0(fig_path, var, "_bss90_",
+                       target_month, "_", target_year, ".pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p3, width = 8, height = 6, dpi = 300)
+
 
 skill10 <- CSTools::CST_BindDim(bs1, "time")
 skill10$attrs <- bs1[[1]]$attrs
@@ -280,6 +294,10 @@ p4 <- c4h_plotskill(skill10, sign = sign10,
 ggplot2::ggsave(paste0(fig_path, var, "_bss10_",
                        target_month, "_", target_year, ".png"),
                 plot = p4, width = 8, height = 6, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_bss10_",
+                       target_month, "_", target_year, ".pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p4, width = 8, height = 6, dpi = 300)
 
 rean_tmp <- rean
 rean_clim <- c4h_collapse(rean_tmp, dim = "sdate", fun = "mean")
@@ -293,6 +311,10 @@ p5 <- p5 + ggplot2::scale_fill_continuous(palette = pal, limits = lims)
 
 ggplot2::ggsave(paste0(fig_path, var, "_climatology_",
                        target_month, ".png"),
+                plot = p5, width = 5, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_climatology_",
+                       target_month, ".pdf"),
+                device = grDevices::cairo_pdf,
                 plot = p5, width = 5, height = 4, dpi = 300)
 
 rean_obs <- c4h_load(rean_path,
@@ -322,6 +344,10 @@ p6 <- p6 + ggplot2::scale_fill_continuous(palette = pal, limits = lims)
 ggplot2::ggsave(paste0(fig_path, var, "_observed_",
                        target_month, "_", target_year, ".png"),
                 plot = p6, width = 5, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_observed_",
+                       target_month, "_", target_year, ".pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p6, width = 5, height = 4, dpi = 300)
 
 
 anom <- rean_obs
@@ -348,28 +374,7 @@ p7 <- p7 +
 ggplot2::ggsave(paste0(fig_path, var, "_anomaly_",
                        target_month, "_", target_year, ".png"),
                 plot = p7, width = 5, height = 4, dpi = 300)
-
-
-
-# --- Plot recent observations ---
-load_recent <- FALSE
-
-if (load_recent) {
-  rean_obs <- c4h_load(rean_path,
-                       variable = var,
-                       ext = "nc",
-                       month = 1,
-                       leadtime_month = 1:12,
-                       bbox = c(5.5, -78, 3.0, -75),
-                       year = 2017:2025)
-  if (var == "prlr") {
-    rean_obs$data  <- rean_obs$data * 3600 * 24 * 30.44 * 1000 # convert
-  } else if (var == "tas") {
-    rean_obs <- c4h_convert_units(rean_obs, to = "celsius") # convert K to C
-  }
-
-  rean_obs <- c4h_space(rean_obs, munip, fun = "mean",
-                        areas_id = "munip_code")
-
-  c4h_plot(rean_obs)
-}
+ggplot2::ggsave(paste0(fig_path, var, "_anomaly_",
+                       target_month, "_", target_year, ".pdf"),
+                device = grDevices::cairo_pdf,
+                plot = p7, width = 5, height = 4, dpi = 300)

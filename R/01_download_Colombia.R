@@ -17,6 +17,7 @@ clim4health_path <- "/home/eball/gitlab_repos/clim4health/"
 devtools::load_all(clim4health_path)
 data_path <- "data/raw"
 var <- "tp"
+pat_api <- "XXXXXXXXXXXXXXXXXXXXXXX"
 
 if (var == "t2m") {
   longname <- "2m_temperature"
@@ -82,7 +83,7 @@ for (j in 7:12) {
 
 outname <- paste0("forecast_", var)
 for (j in 7:12) {
-  for (i in 2024) {
+  for (i in 2025) {
     if (!file.exists(paste0(path_fore, "/", sprintf("%02d", j),
                             "/", outname, "_",
                             i, sprintf("%02d", j), ".nc"))) {

@@ -29,8 +29,7 @@ for (var in vars) {
 outname <- "era5land_t2m"
 
 path_out <- paste0("data/raw/Brazil/era5land/")
-pat_api <- "92fde86e-5b78-4d56-897e-f83e094bacc6"
-
+pat_api <- "XXXXXXXXXXXXXXXXXXXXXXX"
 
 for (i in 2000:2025) {
   for (j in 1:12) {
@@ -43,6 +42,30 @@ for (i in 2000:2025) {
               year = i,
               month = j,
               time = 1:23,
+              bbox = c(-5, -40, -10, -35),
+              outname = outname,
+              outpath = path_out)
+    }
+  }
+}
+### forecast temperature ###
+outname <- "forecast_t2m"
+
+path_out <- paste0("data/raw/Brazil/fcst/")
+
+for (i in 2000:2025) {
+  for (j in 1) {
+    if (!file.exists(paste0(path_out, outname, "_",
+                            i, sprintf("%02d", j), ".nc"))) {
+      c4h_get(pat = pat_api,
+              dataset = "seasonal-monthly-single-levels",
+              originating_centre = c("ecmwf"),
+              product_type = c("monthly_mean"),
+              system = c("51"),
+              variable = "2m_temperature",
+              year = i,
+              month = j,
+              time = 1:7,
               bbox = c(-5, -40, -10, -35),
               outname = outname,
               outpath = path_out)

@@ -17,11 +17,12 @@ library(devtools)
 clim4health_path <- "/esarchive/scratch/eball/gitlab_repos/clim4health/"
 devtools::load_all(clim4health_path)
 
-path_out <- "data/raw/Brazil/obs/"
+path_in  <- "data/raw/Brazil/obs/"
+path_out <- "data/processed/Brazil/obs/"
 ####################################################################
 
 # extract data, in this case from an excel file #
-station_data <- data.table::fread(paste0(path_out,
+station_data <- data.table::fread(paste0(path_in,
                                  "dados_82791_D_2000-01-01_2025-12-31.csv"))
 
 # look at the column names to identify variables #
