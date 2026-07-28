@@ -2,6 +2,7 @@ data/raw/*
 data/preprocessed/*
 data/analysis/*
 results/*
+figures/*/*.pdf
 *.nc
 *.html
 !data/raw/instructions.txt
