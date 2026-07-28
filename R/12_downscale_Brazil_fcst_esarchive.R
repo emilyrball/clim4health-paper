@@ -2,8 +2,9 @@
 # Climate Services Team (CST) / Global Health Resilience (GHR)
 # Barcelona Supercomputing Center (BSC-CNS)
 #
-# Script Name: 10_downscale_Brazil_fcst.R
-# Description: Downscale gridded forecast data to station locations.
+# Script Name: 12_downscale_Brazil_fcst_esarchive.R
+# Description: Downscale gridded forecast data to station locations. Using data
+#              from esarchive - internal use only.
 
 #
 # Author(s): Emily Ball
@@ -21,9 +22,10 @@ library(patchwork)
 library(tibble)
 
 # 0. Set paths and load packages
-clim4health_path <- "/home/eball/gitlab_repos/clim4health/"
-hind_path <- "data/raw/Brazil/fcst/"
-rean_path <- "data/raw/Brazil/era5land/"
+clim4health_path <- "/esarchive/scratch/eball/gitlab_repos/clim4health/"
+exp_path <- "/esarchive/exp/ecmwf/system51c3s/monthly_mean/"
+hind_path <-  paste0(exp_path, "tas_f6h/")
+rean_path <- "/esarchive/recon/ecmwf/era5land/monthly_mean/tas_f1h/"
 
 devtools::load_all(clim4health_path)
 
@@ -35,7 +37,7 @@ station_data <- readRDS("data/processed/Brazil/obs/brazil_monthly.rds")
 
 ## Load hindcast data
 hcst <- c4h_load(hind_path,
-                 variable = "t2m",
+                 variable = "tas",
                  year = 2000:2024,
                  month = 1,
                  leadtime_month = 1:7,
@@ -45,7 +47,7 @@ hcst$attrs$Dates <- as.Date(hcst$attrs$Dates)
 
 ## Load forecast data
 fcst <- c4h_load(hind_path,
-                 variable = "t2m",
+                 variable = "tas",
                  year = 2025,
                  month = 1,
                  leadtime_month = 1:7,
@@ -55,7 +57,7 @@ fcst$attrs$Dates <- as.Date(fcst$attrs$Dates)
 
 ## Load reanalysis data
 rean <- c4h_load(rean_path,
-                 variable = "t2m",
+                 variable = "tas",
                  year = 2000:2024,
                  month = 1,
                  leadtime_month = 1:12,
@@ -64,7 +66,7 @@ rean <- c4h_load(rean_path,
 
 ## Load reanalysis data
 obs <- c4h_load(rean_path,
-                variable = "t2m",
+                variable = "tas",
                 year = 2025,
                 month = 1,
                 leadtime_month = 1:7,
@@ -72,10 +74,10 @@ obs <- c4h_load(rean_path,
                 ext = "nc")
 
 # 2. Convert units to Celsius
-hcst <- c4h_convert_units(hcst, var = "t2m", to = "celsius")
-rean <- c4h_convert_units(rean, var = "t2m", to = "celsius")
-fcst <- c4h_convert_units(fcst, var = "t2m", to = "celsius")
-obs  <- c4h_convert_units(obs,  var = "t2m", to = "celsius")
+hcst <- c4h_convert_units(hcst, var = "tas", to = "celsius")
+rean <- c4h_convert_units(rean, var = "tas", to = "celsius")
+fcst <- c4h_convert_units(fcst, var = "tas", to = "celsius")
+obs  <- c4h_convert_units(obs,  var = "tas", to = "celsius")
 
 # 3. Extract station locations for downscaling
 locations <- list(latitude = station_data$attrs$location$latitude,
