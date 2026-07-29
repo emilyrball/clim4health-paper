@@ -60,6 +60,8 @@ sig9 <- list()
 bs1 <- list()
 sig1 <- list()
 
+hc <- list()
+
 # --- Load and aggregate reanalysis data ---
 rean <- c4h_load(rean_path,
                  variable = var,
@@ -113,7 +115,6 @@ for (ij in (target_month - nmonth + 1):target_month) {
   } else if (var == "tas") {
     hind <- c4h_convert_units(hind, to = "celsius") # convert K to C
   }
-
   print("Loading forecast")
   fcst <- c4h_load(hind_path,
                    variable = var,
@@ -188,6 +189,12 @@ for (ij in (target_month - nmonth + 1):target_month) {
     lubridate::add_with_rollback(skill_cal$BSS10$sign$attrs$Dates,
                                  months(ij - target_month))
   sig1[[length(sig1) + 1]] <- skill_cal$BSS10$sign
+
+  hind_cal$exp$attrs$Dates <-
+    lubridate::add_with_rollback(hind_cal$exp$attrs$Dates,
+                                 months(ij - target_month))
+
+  hc[[length(hc) + 1]] <- hind_cal$exp
 }
 
 forecast <- CSTools::CST_BindDim(llf, "sdate")
@@ -378,3 +385,108 @@ ggplot2::ggsave(paste0(fig_path, var, "_anomaly_",
                        target_month, "_", target_year, ".pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p7, width = 5, height = 4, dpi = 300)
+
+
+# --- plot most likely tercile ---
+rean_drop <- CSTools::CST_BindDim(list(rean, rean_obs), along = "sdate")
+rean_drop$data <- array(rean_drop$data,
+                        dim = rean_drop$dims[names(rean_drop$dims) != "ensemble"])
+rean_drop$dims <- dim(rean_drop$data)
+
+x <- list()
+
+for (j in 1:6) {
+  fcst_tmp <- llf[[j]]
+  fcst_tmp$attrs$Variable$varName <- "prlr"
+  fcst_tmp$attrs$Variable$metadata <- list(prlr = list(units = "mm"))
+  fcst_tmp <- CSTools::CST_Subset(fcst_tmp, along = "ensemble", indices = 1:25)
+  
+  hind_tmp <- CSTools::CST_BindDim(list(hc[[j]], fcst_tmp), along = "sdate")
+  
+  out <- CSTools::CST_Anomaly(exp = hind_tmp, obs = rean_drop,
+                              memb_dim = "ensemble",
+                              ftime_dim = "time",
+                              dat_dim = c("dataset", "ensemble"),
+                              cross = TRUE, memb = TRUE)
+  ano_exp <- out[[1]]
+  ano_obs <- out[[2]]
+
+  probs <- s2dv::ProbBins(ano_exp$data, fcyr = length(ano_exp$attrs$Dates),
+                          memb_dim = "ensemble",
+                          thr = c(1/3, 2/3), compPeriod = "Without fcyr")
+  prob_map <- s2dv::MeanDims(probs, c("ensemble"))
+  
+  names(dim(prob_map))[[which(names(dim(prob_map)) == "bin")]] <- "ensemble"
+  prob_cube <- list(data = prob_map, dims = dim(prob_map),
+                    attrs = fcst_tmp$attrs,
+                    metadata = fcst_tmp$metadata)
+  class(prob_cube) <- "s2dv_cube"
+  prob_cube$attrs$Dates <- array(prob_cube$attrs$Dates, dim = c("sdate" = 1, "time" = 1))
+  prob_cube$attrs$Dates <- as.Date(prob_cube$attrs$Dates, origin = "1970-01-01")
+  x[[j]] <- prob_cube
+}
+
+prob_cube <- CSTools::CST_BindDim(x, along = "sdate")
+prob_cube$attrs$Dates <- forecast$attrs$Dates
+
+prob_cube <- CSTools::CST_ReorderDims(prob_cube,
+                                      order = c("dataset", "var", "sdate",
+                                                "time", "ensemble", "area"))
+prob_cube$attrs <- forecast$attrs
+prob_cube$coords <- forecast$coords
+
+
+p_tmp <- prob_cube
+d <- dim(p_tmp$data)
+ens_pos <- which(names(d) == "ensemble")   # position 5 here
+
+# get index of max along ensemble, collapsing it
+idx <- apply(p_tmp$data, MARGIN = seq_along(d)[-ens_pos], FUN = which.max)
+
+# re-insert the ensemble dim as length 1 (doesn't change data ordering,
+# since a size-1 dim doesn't affect strides of the other dims)
+d[ens_pos] <- 1
+dim(idx) <- d
+
+# carry over dimnames, dropping ensemble labels (now meaningless as indices)
+dn <- dimnames(p_tmp$data)
+dn[[ens_pos]] <- "max_idx"
+
+
+p_tmp$data <- idx
+p_tmp$dims <- dim(p_tmp$data)
+
+# get the actual max value along ensemble (same MARGIN as before)
+max_val <- apply(prob_cube$data, MARGIN = seq_along(d)[-ens_pos], FUN = max)
+dim(max_val) <- dim(idx)  # reinsert length-1 ensemble dim, same as idx
+
+# mask: keep value only where the max came from ensemble member 3, else NA
+masked_val <- max_val
+masked_val[idx != 3] <- NA
+
+p_tmp$data <- masked_val * 100
+p_tmp$dims <- dim(p_tmp$data)
+
+px <- c4h_plot(p_tmp, title = paste0("Most Likely Tercile, Target Month: ",
+                                   month.name[target_month], " ",
+                                   target_year)) + 
+  ggplot2::scale_fill_distiller(
+    name = "Below Normal (%)",
+    palette = "Reds", direction = 1,
+    limits = c(0, 100)
+  ) + 
+  ggplot2::scale_fill_stepsn(
+    name = "Below\nNormal (%)",
+    colours = RColorBrewer::brewer.pal(5, "Reds"),
+    breaks = seq(20, 80, by = 20),  # bin edges; adjust bin width as needed
+    limits = c(0, 100),
+    show.limits = TRUE  # shows the outer edge labels (0 and 1) in the legend
+  )
+
+ggplot2::ggsave(paste0(fig_path, var, "_terciles_",
+                       target_month, "_", target_year, ".png"),
+                plot = px, width = 8, height = 6, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_terciles_",
+                       target_month, "_", target_year, ".pdf"),
+                device = grDevices::cairo_pdf,
+                plot = px, width = 8, height = 6, dpi = 300)
