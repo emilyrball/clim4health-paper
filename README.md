@@ -7,13 +7,11 @@
 <!-- badges: end -->
 <br>
 
-(update DOI in badge)
-
 ***
 
 ## Overview
 
-This repository contains the analysis code and results of the tools paper *clim4health: an R package to harmonise climate datasets for health impact studies* by Emily Ball, Alba Llabrés-Brustenga, Carles Milà Garcia, Rebeca Nunes Rodrigues, Daniela Lührsen, and Rachel Lowe. The article is in review at *Wellcome Open Research* and it is openly available at [placeholder link](https://doi.org/10.1002/sim.5549). A preprint of the article is available at [placeholder link](https://doi.org/10.1002/sim.5549).
+This repository contains the analysis code and results of the tools paper *clim4health: an R package to harmonise climate datasets for health impact studies* by Emily Ball, Alba Llabrés-Brustenga, Carles Milà Garcia, Rebeca Nunes Rodrigues, Daniela Lührsen, and Rachel Lowe. The article is in review at *Wellcome Open Research*.
 
 *clim4health* is an R package designed to obtain, transform and export climate data for their use in epidemiological analyses and other types of applications. The package contains a series of functions structured in three sequential blocks: input, transformation, and output.
 
@@ -33,13 +31,9 @@ To access the repository, please download it as a zip file using the gitlab inte
 git clone https://gitlab.earth.bsc.es/ghr/clim4health-paper.git
 ```
 
-(dependencies - R) We used R version XX with the following packages: [lubridate](https://cran.r-project.org/web/packages/lubridate/index.html), [GHRexplore](https://cran.r-project.org/web/packages/GHRexplore/index.html) and [sf](https://cran.r-project.org/web/packages/sf/index.html).
+(dependencies - R) We used R version 4.4.1 with the following packages: clim4health (https://cran.r-project.org/web/packages/clim4health/), devtools (https://cran.r-project.org/web/packages/devtools/), sf (https://cran.r-project.org/web/packages/sf/), ggplot2 (https://cran.r-project.org/web/packages/ggplot2/), cowplot (https://cran.r-project.org/web/packages/cowplot/), tidyr (https://cran.r-project.org/web/packages/tidyr/), dplyr (https://cran.r-project.org/web/packages/dplyr/), patchwork (https://cran.r-project.org/web/packages/patchwork/), tibble (https://cran.r-project.org/web/packages/tibble/).
 
-(environment - Conda) A conda environment was used to run this analysis. Please access the [environment file](environment.yml) to create it.
-
-(computing - local) Scripts 01–04 were executed on a local Windows/Ubuntu machine with XX CPU cores and XX GB of RAM.
-
-(computing - Hub) Scripts 01–04 were executed on an remote machine with 16 cores and 32 GB of RAM.
+(computing - Hub) All scripts were executed on a remote machine with 16 cores and 32 GB of RAM.
 
 ## Repository structure
 
