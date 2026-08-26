@@ -40,7 +40,7 @@ git clone https://gitlab.earth.bsc.es/ghr/clim4health-paper.git
 Scripts should be run in the order indicated by the two first script digits. The structure of the repository is as follows:
 
 <pre lang="markdown">
-<b>projecttitle/</b>
+<b>clim4health-paper/</b>
 │
 ├── R/                           
 │   ├── 00_utils.R                                 # Analysis functions
