@@ -3,6 +3,12 @@
 
 ***
 
+<!-- badges: start -->
+[![DOI](https://zenodo.org/badge/1347220045.svg)](https://doi.org/10.5281/zenodo.22141612)
+[![GPL3 license](https://img.shields.io/badge/License-GPL3-blue.svg)](LICENSE.md)
+<!-- badges: end -->
+<br>
+
 ## Overview
 
 This repository contains the analysis code and results of the tools paper *clim4health: an R package to harmonise climate datasets for health impact studies* by Emily Ball, Alba Llabrés-Brustenga, Carles Milà Garcia, Rebeca Nunes Rodrigues, Daniela Lührsen, and Rachel Lowe. The article is in review at *Wellcome Open Research*.
