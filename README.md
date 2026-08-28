@@ -55,8 +55,8 @@ Scripts should be run in the order indicated by the two first script digits. The
 │   ├── 09_validate_Brazil.R                       # Compare station to ERA5-Land
 │   ├── 10_downscale_Brazil_fcst.R                 # Downscale forecast
 │   └── clean_scripts/
-│       ├── *.Rmd                                  # To create Figs S3, S4, S5, S7
-│       └── convert_to_jpg.R                       # Convert pdf to jpg (Figs S3, S4, S5, S7)
+│       ├── *.Rmd                                  # To create Figs 4, 5, 6, 18
+│       └── convert_to_jpg.R                       # Convert pdf to jpg (Figs 4, 5, 6, 18)
 │
 ├── data/
 │    ├── raw/                # Project-specific raw data
