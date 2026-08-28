@@ -2,12 +2,15 @@
 output:
   pdf_document:
     latex_engine: pdflatex
-geometry: margin=0in
+  word_document: default
+#geometry: margin=0in
 header-includes:
-  - \pagestyle{empty}
-  - \usepackage{xcolor}
+- \pagestyle{empty}
+- \usepackage{xcolor}
+- \raggedbottom
 documentclass: article
 classoption: a4paper
+geometry: "margin=0in, paperwidth=210mm, paperheight=125.5mm"
 ---
 ``` {r eval = FALSE}
 # --- load clim4health package --- #

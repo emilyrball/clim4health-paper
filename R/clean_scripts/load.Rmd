@@ -2,12 +2,13 @@
 output:
   pdf_document:
     latex_engine: pdflatex
-geometry: margin=0in
+#geometry: margin=0in
 header-includes:
   - \pagestyle{empty}
   - \usepackage{xcolor}
 documentclass: article
 classoption: a4paper
+geometry: "margin=0in, paperwidth=210mm, paperheight=80mm"
 ---
 ``` {r eval = FALSE}
 # --- set paths --- #
