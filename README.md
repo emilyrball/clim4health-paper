@@ -4,6 +4,7 @@
 ***
 
 <!-- badges: start -->
+[![DOI](https://zenodo.org/badge/1347220045.svg)](https://doi.org/10.5281/zenodo.22141612)
 [![GPL3 license](https://img.shields.io/badge/License-GPL3-blue.svg)](LICENSE.md)
 <!-- badges: end -->
 <br>
