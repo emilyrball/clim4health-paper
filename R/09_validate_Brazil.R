@@ -33,7 +33,7 @@ station_data <- c4h_time(station_data, dim_aggregation = "time",
 
 reanalysis_monthly <- c4h_load(rean_path,
                  variable = "t2m",
-                 year = 2000:2025,
+                 year = 2001:2025,
                  month = 1,
                  leadtime_month = 1:12,
                  bbox = c(-5, -40, -10, -35),

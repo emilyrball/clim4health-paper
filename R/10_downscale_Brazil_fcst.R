@@ -36,7 +36,7 @@ station_data <- readRDS("data/processed/Brazil/obs/brazil_monthly.rds")
 ## Load hindcast data
 hcst <- c4h_load(hind_path,
                  variable = "t2m",
-                 year = 2000:2024,
+                 year = 2001:2024,
                  month = 1,
                  leadtime_month = 1:7,
                  bbox = c(-5, -40, -10, -35),
@@ -56,7 +56,7 @@ fcst$attrs$Dates <- as.Date(fcst$attrs$Dates)
 ## Load reanalysis data
 rean <- c4h_load(rean_path,
                  variable = "t2m",
-                 year = 2000:2024,
+                 year = 2001:2024,
                  month = 1,
                  leadtime_month = 1:12,
                  bbox = c(-5, -40, -10, -35),
@@ -481,7 +481,7 @@ p_skill <- ggplot(skill_wide, aes(x = time, color = Source, fill = Source)) +
   facet_wrap(~ metric, scales = "free_y", ncol = 1) +
   theme_minimal() +
   labs(x = "Lead time (months)", y = "Skill Score Value",
-       title = "Forecast Initialised: Jan 2025 (Reference Period: 2000 - 2024)") +
+       title = "Forecast Initialised: Jan 2025 (Reference Period: 2001 - 2024)") +
   theme(legend.position = "bottom")
 
 ggsave("figures/Brazil/skill_plot_fcst.png", p_skill,

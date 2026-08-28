@@ -148,7 +148,7 @@ stat_monthly <- station_data %>%
     .groups = "drop"
   )
 
-unique_years <- 2000:2025
+unique_years <- 2001:2025
 unique_months <- 1:12
 # in this case make a yearly array so sdate = n_years, time = 12
 # there are dataset, var, sdate, time, ensemble, location dimensions

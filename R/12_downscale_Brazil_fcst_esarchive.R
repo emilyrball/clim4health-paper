@@ -483,7 +483,7 @@ p_skill <- ggplot(skill_wide, aes(x = time, color = Source, fill = Source)) +
   facet_wrap(~ metric, scales = "free_y", ncol = 1) +
   theme_minimal() +
   labs(x = "Lead time (months)", y = "Skill Score Value",
-       title = "Forecast Initialised: Jan 2025 (Reference Period: 2000 - 2024)") +
+       title = "Forecast Initialised: Jan 2025 (Reference Period: 2001 - 2024)") +
   theme(legend.position = "bottom")
 
 ggsave("figures/Brazil/skill_plot_fcst.png", p_skill,
