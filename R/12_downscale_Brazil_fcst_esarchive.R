@@ -38,7 +38,7 @@ station_data <- readRDS("data/processed/Brazil/obs/brazil_monthly.rds")
 ## Load hindcast data
 hcst <- c4h_load(hind_path,
                  variable = "tas",
-                 year = 2000:2024,
+                 year = 2001:2024,
                  month = 1,
                  leadtime_month = 1:7,
                  bbox = c(-5, -40, -10, -35),
@@ -58,7 +58,7 @@ fcst$attrs$Dates <- as.Date(fcst$attrs$Dates)
 ## Load reanalysis data
 rean <- c4h_load(rean_path,
                  variable = "tas",
-                 year = 2000:2024,
+                 year = 2001:2024,
                  month = 1,
                  leadtime_month = 1:12,
                  bbox = c(-5, -40, -10, -35),
@@ -95,7 +95,7 @@ station_temp$coords$latitude <- locations$latitude
 
 ## Subset leadtime for forecast calibration
 station_fcst <- station_temp
-station_fcst$data <- station_fcst$data[, , 1:25, 1:7, , , drop = FALSE]
+station_fcst$data <- station_fcst$data[, , 1:24, 1:7, , , drop = FALSE]
 station_fcst$dims <- dim(station_fcst$data)
 
 # 6. Downscale hindcast and reanalysis data to station locations
@@ -241,6 +241,8 @@ p1 <- ggplot() +
   theme(legend.position = "bottom")
 
 ggsave("figures/Brazil/calibrated_plot_fcst_2025.png", p1,
+       width = 17, height = 8, dpi = 300)
+ggsave("figures/Brazil/calibrated_plot_fcst_2025.jpg", p1,
        width = 17, height = 8, dpi = 300)
 ggsave("figures/Brazil/calibrated_plot_fcst_2025.pdf", p1,
        device = grDevices::cairo_pdf,
@@ -485,6 +487,8 @@ p_skill <- ggplot(skill_wide, aes(x = time, color = Source, fill = Source)) +
   theme(legend.position = "bottom")
 
 ggsave("figures/Brazil/skill_plot_fcst.png", p_skill,
+       width = 11, height = 8, dpi = 300)
+ggsave("figures/Brazil/skill_plot_fcst.jpg", p_skill,
        width = 11, height = 8, dpi = 300)
 ggsave("figures/Brazil/skill_plot_fcst.pdf", p_skill,
        device = grDevices::cairo_pdf,

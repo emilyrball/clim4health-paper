@@ -171,6 +171,9 @@ ggplot2::ggsave(paste0(fig_path, var, "_forecast_",
                        target_month, "_", target_year, ".png"),
                 plot = p1, width = 8, height = 6, dpi = 300)
 ggplot2::ggsave(paste0(fig_path, var, "_forecast_",
+                       target_month, "_", target_year, ".jpg"),
+                plot = p1, width = 8, height = 6, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_forecast_",
                        target_month, "_", target_year, ".pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p1, width = 8, height = 6, dpi = 300)
@@ -200,6 +203,9 @@ ggplot2::ggsave(paste0(fig_path, var, "_rpss_",
                        target_month, "_", target_year, ".png"),
                 plot = p2, width = 8, height = 6, dpi = 300)
 ggplot2::ggsave(paste0(fig_path, var, "_rpss_",
+                       target_month, "_", target_year, ".jpg"),
+                plot = p2, width = 8, height = 6, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_rpss_",
                        target_month, "_", target_year, ".pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p2, width = 8, height = 6, dpi = 300)
@@ -221,6 +227,9 @@ p3 <- c4h_plotskill(skill90, sign = sign90,
 
 ggplot2::ggsave(paste0(fig_path, var, "_bss90_",
                        target_month, "_", target_year, ".png"),
+                plot = p3, width = 8, height = 6, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_bss90_",
+                       target_month, "_", target_year, ".jpg"),
                 plot = p3, width = 8, height = 6, dpi = 300)
 
 ggplot2::ggsave(paste0(fig_path, var, "_bss90_",
@@ -247,6 +256,9 @@ ggplot2::ggsave(paste0(fig_path, var, "_bss10_",
                        target_month, "_", target_year, ".png"),
                 plot = p4, width = 8, height = 6, dpi = 300)
 ggplot2::ggsave(paste0(fig_path, var, "_bss10_",
+                       target_month, "_", target_year, ".jpg"),
+                plot = p4, width = 8, height = 6, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_bss10_",
                        target_month, "_", target_year, ".pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p4, width = 8, height = 6, dpi = 300)
@@ -263,6 +275,9 @@ p5 <- p5 + ggplot2::scale_fill_continuous(palette = pal, limits = lims)
 
 ggplot2::ggsave(paste0(fig_path, var, "_climatology_",
                        target_month, ".png"),
+                plot = p5, width = 5, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_climatology_",
+                       target_month, ".jpg"),
                 plot = p5, width = 5, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path, var, "_climatology_",
                        target_month, ".pdf"),
@@ -297,6 +312,9 @@ ggplot2::ggsave(paste0(fig_path, var, "_observed_",
                        target_month, "_", target_year, ".png"),
                 plot = p6, width = 5, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path, var, "_observed_",
+                       target_month, "_", target_year, ".jpg"),
+                plot = p6, width = 5, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_observed_",
                        target_month, "_", target_year, ".pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p6, width = 5, height = 4, dpi = 300)
@@ -325,6 +343,9 @@ p7 <- p7 +
   )
 ggplot2::ggsave(paste0(fig_path, var, "_anomaly_",
                        target_month, "_", target_year, ".png"),
+                plot = p7, width = 5, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, var, "_anomaly_",
+                       target_month, "_", target_year, ".jpg"),
                 plot = p7, width = 5, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path, var, "_anomaly_",
                        target_month, "_", target_year, ".pdf"),

@@ -83,6 +83,8 @@ p1 <- ggplot(data_long, aes(x = as.Date(date), y = value, color = source,
 
 ggsave("figures/Brazil/calibration_plot.png", p1,
        width = 14, height = 5, dpi = 300)
+ggsave("figures/Brazil/calibration_plot.jpg", p1,
+       width = 14, height = 5, dpi = 300)
 ggsave("figures/Brazil/calibration_plot.pdf", p1,
        device = grDevices::cairo_pdf,
        width = 14, height = 5, dpi = 300)

@@ -25,6 +25,9 @@ path_out <- "data/processed/Brazil/obs/"
 station_data <- data.table::fread(paste0(path_in,
                                  "dados_82791_D_2000-01-01_2025-12-31.csv"))
 
+# restrict to 2001 onward
+station_data <- station_data[as.Date(`Data Medicao`) >= as.Date("2001-01-01")]
+
 # look at the column names to identify variables #
 print(names(station_data))
 

@@ -240,6 +240,8 @@ p1 <- ggplot() +
 
 ggsave("figures/Brazil/calibrated_plot_fcst_2025.png", p1,
        width = 17, height = 8, dpi = 300)
+ggsave("figures/Brazil/calibrated_plot_fcst_2025.jpg", p1,
+       width = 17, height = 8, dpi = 300)
 ggsave("figures/Brazil/calibrated_plot_fcst_2025.pdf", p1,
        device = grDevices::cairo_pdf,
        width = 17, height = 8, dpi = 300)
@@ -483,6 +485,8 @@ p_skill <- ggplot(skill_wide, aes(x = time, color = Source, fill = Source)) +
   theme(legend.position = "bottom")
 
 ggsave("figures/Brazil/skill_plot_fcst.png", p_skill,
+       width = 11, height = 8, dpi = 300)
+ggsave("figures/Brazil/skill_plot_fcst.jpg", p_skill,
        width = 11, height = 8, dpi = 300)
 ggsave("figures/Brazil/skill_plot_fcst.pdf", p_skill,
        device = grDevices::cairo_pdf,

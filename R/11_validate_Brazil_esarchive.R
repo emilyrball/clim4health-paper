@@ -34,7 +34,7 @@ station_data <- c4h_time(station_data, dim_aggregation = "time",
 
 reanalysis_monthly <- c4h_load(rean_path,
                  variable = "tas",
-                 year = 2000:2025,
+                 year = 2001:2025,
                  month = 1,
                  leadtime_month = 1:12,
                  bbox = c(-5, -40, -10, -35),
@@ -83,6 +83,8 @@ p1 <- ggplot(data_long, aes(x = as.Date(date), y = value, color = source,
   theme(legend.position = "bottom")
 
 ggsave("figures/Brazil/calibration_plot.png", p1,
+       width = 14, height = 5, dpi = 300)
+ggsave("figures/Brazil/calibration_plot.jpg", p1,
        width = 14, height = 5, dpi = 300)
 ggsave("figures/Brazil/calibration_plot.pdf", p1,
        device = grDevices::cairo_pdf,

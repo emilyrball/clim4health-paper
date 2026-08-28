@@ -116,6 +116,9 @@ ggplot2::ggsave(paste0(fig_path, "/downscaled_",
                        "temperature_forecast.png"),
                 plot = p1, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path, "/downscaled_",
+                       "temperature_forecast.jpg"),
+                plot = p1, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path, "/downscaled_",
                        "temperature_forecast.pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p1, width = 8, height = 4, dpi = 300)
@@ -141,6 +144,10 @@ ggplot2::ggsave(paste0(fig_path,
                 plot = p2, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
                        "/raw_",
+                       "temperature_forecast.jpg"),
+                plot = p2, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/raw_",
                        "temperature_forecast.pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p2, width = 8, height = 4, dpi = 300)
@@ -160,6 +167,10 @@ ggplot2::ggsave(paste0(fig_path,
                 plot = p3, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
                        "/observed_",
+                       "temperature.jpg"),
+                plot = p3, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/observed_",
                        "temperature.pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p3, width = 8, height = 4, dpi = 300)
@@ -175,6 +186,9 @@ ggplot2::ggsave(paste0(fig_path,
                        "/temperature_skill_crpss.png"),
                 plot = p4, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
+                       "/temperature_skill_crpss.jpg"),
+                plot = p4, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
                        "/temperature_skill_crpss.pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p4, width = 8, height = 4, dpi = 300)
@@ -187,6 +201,9 @@ p5 <- c4h_plot(skill_cal$RMSE$rmse,
                mask_boundaries = TRUE)
 ggplot2::ggsave(paste0(fig_path,
                        "/temperature_skill_rmse.png"),
+                plot = p5, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/temperature_skill_rmse.jpg"),
                 plot = p5, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
                        "/temperature_skill_rmse.pdf"),
@@ -222,6 +239,10 @@ ggplot2::ggsave(paste0(fig_path,
                 plot = p7, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
                        "/downscaled_",
+                       "aedes_aegypti_forecast.jpg"),
+                plot = p7, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/downscaled_",
                        "aedes_aegypti_forecast.pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p7, width = 8, height = 4, dpi = 300)
@@ -236,6 +257,10 @@ p8 <- c4h_plot(obs_aedes,
 ggplot2::ggsave(paste0(fig_path,
                        "/observed_",
                        "aedes_aegypti_suitability.png"),
+                plot = p8, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/observed_",
+                       "aedes_aegypti_suitability.jpg"),
                 plot = p8, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
                        "/observed_",
@@ -254,6 +279,9 @@ ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_bss50.png"),
                 plot = p9, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
+                       "/aedes_aegypti_suitability_skill_bss50.jpg"),
+                plot = p9, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_bss50.pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p9, width = 8, height = 4, dpi = 300)
@@ -267,6 +295,9 @@ p9 <- c4h_plotskill(skill_aedes$BSS90$bss,
                     mask_boundaries = TRUE)
 ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_bss90.png"),
+                plot = p9, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/aedes_aegypti_suitability_skill_bss90.jpg"),
                 plot = p9, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_bss90.pdf"),
@@ -283,6 +314,9 @@ ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_bss10.png"),
                 plot = p9, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
+                       "/aedes_aegypti_suitability_skill_bss10.jpg"),
+                plot = p9, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_bss10.pdf"),
                 device = grDevices::cairo_pdf,
                 plot = p9, width = 8, height = 4, dpi = 300)
@@ -296,6 +330,9 @@ p9 <- c4h_plotskill(skill_aedes$CRPSS$crpss,
                     mask_boundaries = TRUE)
 ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_crpss.png"),
+                plot = p9, width = 8, height = 4, dpi = 300)
+ggplot2::ggsave(paste0(fig_path,
+                       "/aedes_aegypti_suitability_skill_crpss.jpg"),
                 plot = p9, width = 8, height = 4, dpi = 300)
 ggplot2::ggsave(paste0(fig_path,
                        "/aedes_aegypti_suitability_skill_crpss.pdf"),
