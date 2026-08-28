@@ -5,7 +5,7 @@ results/*
 figures/*/*.pdf
 *.nc
 *.html
-!data/raw/instructions.txt
-!data/processed/instructions.txt
-!data/analysis/instructions.txt
-!results/instructions.txt
+data/raw/instructions.txt
+data/processed/instructions.txt
+data/analysis/instructions.txt
+results/instructions.txt
