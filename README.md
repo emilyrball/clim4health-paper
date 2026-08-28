@@ -1,12 +1,6 @@
 # clim4health: an R package to harmonise climate datasets for health impact studies
  <a href='https://www.bsc.es/es'><img src='figures/BSC-logo.png' align="right" height="80" width="80" /></a> <a href='https://www.bsc.es/es'><img src='figures/logo_harmonize.png' align="right" height="80" width="80" /></a>
 
-<!-- badges: start -->
-[![DOI](https://img.shields.io/badge/DOI-10.1002/sim.5549-greeb)](https://doi.org/10.1002/sim.5549)
-[![GPL3 license](https://img.shields.io/badge/License-GPL3-blue.svg)](LICENSE.md)
-<!-- badges: end -->
-<br>
-
 ***
 
 ## Overview
@@ -15,10 +9,10 @@ This repository contains the analysis code and results of the tools paper *clim4
 
 *clim4health* is an R package designed to obtain, transform and export climate data for their use in epidemiological analyses and other types of applications. The package contains a series of functions structured in three sequential blocks: input, transformation, and output.
 
-© 2026 BSC. The content of this repository is licensed under [GPL3](LICENSE) (please check FAQs below if you want to change it).
+© 2026 BSC. The content of this repository is licensed under [GPL3](LICENSE).
 
 <div align="center">
-<img src='figures/DominicanRepublic/temperature_skill_crpss.png' width="80%" /></center>
+<img src='figures/DominicanRepublic/temperature_skill_crpss.jpg' width="80%" /></center>
 <p> CRPSS of a downscaled temperature forecast over the Dominican Republic, generated using clim4health. Figure 8 of the manuscript. </p>
 </div>
 
@@ -53,7 +47,10 @@ Scripts should be run in the order indicated by the two first script digits. The
 │   ├── 07_download_Brazil.R                       # Download data
 │   ├── 08_station_to_s2dv_Brazil.R                # Transform station data
 │   ├── 09_validate_Brazil.R                       # Compare station to ERA5-Land
-│   └── 10_downscale_Brazil_fcst.R                 # Downscale forecast
+│   ├── 10_downscale_Brazil_fcst.R                 # Downscale forecast
+│   └── clean_scripts/
+│       ├── *.Rmd                                  # To create Figs S3, S4, S5, S7
+│       └── convert_to_jpg.R                       # Convert pdf to jpg (Figs S3, S4, S5, S7)
 │
 ├── data/
 │    ├── raw/                # Project-specific raw data
